@@ -1,0 +1,83 @@
+<div class="audit-container">
+  <header class="audit-header">
+    <h1>Historial de Auditoría</h1>
+    <p>Registro de todas las acciones realizadas en el sistema</p>
+  </header>
+
+  <div class="audit-table-container">
+    <div class="table-info">
+      <span class="total-records">Total de registros: {{ totalItems }}</span>
+      <span class="page-info"
+        >Página {{ currentPage }} de {{ totalPages }}</span
+      >
+    </div>
+
+    <div *ngIf="isLoading" class="loading">
+      <div class="loading-spinner"></div>
+      <p>Cargando auditorías...</p>
+    </div>
+
+    <table *ngIf="!isLoading" class="audit-table">
+      <thead>
+        <tr>
+          <th>ID Persona</th>
+          <th>Acción</th>
+          <th>Usuario</th>
+          <th>Email</th>
+          <th>Fecha/Hora</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let audit of audits" class="audit-row">
+          <td class="entity-id">{{ audit.entityId }}</td>
+          <td class="action-cell">
+            <span [ngClass]="getActionColor(audit.action)" class="action-badge">
+              {{ getActionIcon(audit.action) }} {{ audit.action }}
+            </span>
+          </td>
+          <td class="user-name">{{ audit.userName }}</td>
+          <td class="user-email">{{ audit.userEmail }}</td>
+          <td class="timestamp">{{ formatDate(audit.timestamp) }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!isLoading && audits.length === 0" class="no-data">
+      <p>No hay registros de auditoría disponibles</p>
+    </div>
+  </div>
+
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button
+      class="pagination-btn"
+      [disabled]="currentPage === 1"
+      (click)="goToPage(currentPage - 1)"
+    >
+      ← Anterior
+    </button>
+
+    <button
+      *ngFor="let page of getPagesArray()"
+      class="pagination-btn"
+      [ngClass]="{ active: page === currentPage }"
+      (click)="goToPage(page)"
+    >
+      {{ page }}
+    </button>
+
+    <button
+      class="pagination-btn"
+      [disabled]="currentPage === totalPages"
+      (click)="goToPage(currentPage + 1)"
+    >
+      Siguiente →
+    </button>
+  </div>
+
+  <div class="footer-actions">
+    <button class="btn btn-secondary" (click)="goToDashboard()">
+      ← Volver al Dashboard
+    </button>
+    <button class="btn btn-danger" (click)="logout()">Cerrar Sesión</button>
+  </div>
+</div>

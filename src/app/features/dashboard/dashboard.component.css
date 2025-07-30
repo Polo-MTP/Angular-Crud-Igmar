@@ -1,0 +1,163 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  background-color: #667eea;
+  color: white;
+  padding: 20px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.welcome-text {
+  margin-right: 15px;
+  font-size: 18px;
+}
+
+.btn-logout {
+  background-color: #4a56d8;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+  background-color: #3b48c0;
+}
+
+.btn-charts-header {
+  background-color: #4a56d8;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-charts-header:hover {
+  background-color: #3b48c0;
+  color: white;
+  text-decoration: none;
+}
+
+.btn-audit {
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-audit:hover {
+  background-color: #138496;
+}
+
+.dashboard-main {
+  background-color: #f4f5f7;
+  flex: 1;
+  padding: 40px 20px;
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.section-header h2 {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.section-header p {
+  font-size: 16px;
+  color: #555;
+}
+
+.charts-section {
+  margin-bottom: 30px;
+}
+
+.charts-redirect {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.charts-redirect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
+}
+
+.charts-redirect h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.charts-redirect p {
+  margin: 0 0 25px 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.btn-charts {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  text-decoration: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.btn-charts:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+  color: white;
+  text-decoration: none;
+}
+
+.personas-section {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+

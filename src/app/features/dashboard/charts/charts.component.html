@@ -1,0 +1,47 @@
+<div class="charts-container">
+  <!-- Primera gráfica: Por Género -->
+  <div class="chart">
+    <h3>Distribución por Género</h3>
+    <div class="bars">
+      <div class="bar" *ngFor="let data of genderData" [style.height.%]="data.percentage" [style.background-color]="data.color">
+        {{ data.value }}
+      </div>
+    </div>
+    <div class="chart-labels">
+      <div class="label" *ngFor="let data of genderData" [style.color]="data.color">
+        {{ data.label }}: {{ data.value }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Segunda gráfica: Por Edad -->
+  <div class="chart">
+    <h3>Distribución por Edad</h3>
+    <div class="bars">
+      <div class="bar" *ngFor="let data of ageData" [style.height.%]="data.percentage" [style.background-color]="data.color">
+        {{ data.value }}
+      </div>
+    </div>
+    <div class="chart-labels">
+      <div class="label" *ngFor="let data of ageData" [style.color]="data.color">
+        {{ data.label }}: {{ data.value }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Tercera gráfica: Combinación Género + Edad -->
+  <div class="chart">
+    <h3>Combinación Género y Edad</h3>
+    <div class="bars">
+      <div class="bar" *ngFor="let data of combinedData" [style.height.%]="data.percentage" [style.background-color]="data.color">
+        {{ data.value }}
+      </div>
+    </div>
+    <div class="chart-labels">
+      <div class="label" *ngFor="let data of combinedData" [style.color]="data.color">
+        {{ data.label }}: {{ data.value }}
+      </div>
+    </div>
+  </div>
+</div>
+
