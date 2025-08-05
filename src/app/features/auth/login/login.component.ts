@@ -28,32 +28,42 @@ export class LoginComponent {
     private router: Router,
     private tokenMonitorService: TokenMonitorService
   ) {
+    // Sin validaciones en el frontend - todo se maneja en el backend
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      email: [''],
+      password: [''],
     });
   }
 
   onSubmit() {
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      this.errorMessage = '';
+    // No validamos en el frontend, enviamos directamente al backend
+    this.isLoading = true;
+    this.errorMessage = '';
 
-      this.authService.login(this.loginForm.value).subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          if (response.success) {
-            this.tokenMonitorService.startMonitoring();
-            this.router.navigate(['/dashboard']);
+    this.authService.login(this.loginForm.value).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.success) {
+          this.tokenMonitorService.startMonitoring();
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.errorMessage = response.message;
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+        
+        // Manejar errores de validación del backend
+        if (error.error?.errors) {
+          if (error.error.formattedErrors) {
+            this.errorMessage = error.error.formattedErrors;
           } else {
-            this.errorMessage = response.message;
+            this.errorMessage = 'Error de validación: ' + JSON.stringify(error.error.errors);
           }
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.errorMessage = error.error?.message || 'Error en el servidor';
-        },
-      });
-    }
+        } else {
+          this.errorMessage = error.error?.message || 'Error desconocido';
+        }
+      },
+    });
   }
 }

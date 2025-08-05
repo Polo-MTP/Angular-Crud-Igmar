@@ -11,7 +11,7 @@ import { User } from '../../core/models/user.model';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './audit.component.html',
-  styleUrl: './audit.component.css'
+  styleUrl: './audit.component.css',
 })
 export class AuditComponent implements OnInit {
   audits: Audit[] = [];
@@ -23,14 +23,13 @@ export class AuditComponent implements OnInit {
   currentPage = 1;
   totalPages = 1;
   totalItems = 0;
-  itemsPerPage = 20;
+  itemsPerPage = 10;
 
   constructor(
     private auditService: AuditService,
     private authService: AuthService,
     private router: Router
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
@@ -40,15 +39,18 @@ export class AuditComponent implements OnInit {
 
   loadAudits() {
     this.isLoading = true;
-    
+
     const filters: AuditFilters = {
       page: this.currentPage,
-      limit: this.itemsPerPage
+      limit: this.itemsPerPage,
     };
 
     // Limpiar valores vacíos
-    Object.keys(filters).forEach(key => {
-      if (filters[key as keyof AuditFilters] === '' || filters[key as keyof AuditFilters] === null) {
+    Object.keys(filters).forEach((key) => {
+      if (
+        filters[key as keyof AuditFilters] === '' ||
+        filters[key as keyof AuditFilters] === null
+      ) {
         delete filters[key as keyof AuditFilters];
       }
     });
@@ -65,7 +67,7 @@ export class AuditComponent implements OnInit {
       error: (error) => {
         this.isLoading = false;
         console.error('Error loading audits:', error);
-      }
+      },
     });
   }
 
@@ -78,10 +80,9 @@ export class AuditComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading stats:', error);
-      }
+      },
     });
   }
-
 
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
@@ -94,29 +95,37 @@ export class AuditComponent implements OnInit {
     const pages: number[] = [];
     const start = Math.max(1, this.currentPage - 2);
     const end = Math.min(this.totalPages, this.currentPage + 2);
-    
+
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
-    
+
     return pages;
   }
 
   getActionIcon(action: string): string {
     switch (action) {
-      case 'CREATE': return '✅';
-      case 'UPDATE': return '📝';
-      case 'DELETE': return '🗑️';
-      default: return '❓';
+      case 'CREATE':
+        return '✅';
+      case 'UPDATE':
+        return '📝';
+      case 'DELETE':
+        return '🗑️';
+      default:
+        return '❓';
     }
   }
 
   getActionColor(action: string): string {
     switch (action) {
-      case 'CREATE': return 'text-green-600';
-      case 'UPDATE': return 'text-blue-600';
-      case 'DELETE': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'CREATE':
+        return 'text-green-600';
+      case 'UPDATE':
+        return 'text-blue-600';
+      case 'DELETE':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
     }
   }
 
@@ -137,7 +146,7 @@ export class AuditComponent implements OnInit {
         console.error('Error during logout:', error);
         this.authService.clearAuth();
         this.router.navigate(['/auth/login']);
-      }
+      },
     });
   }
 }

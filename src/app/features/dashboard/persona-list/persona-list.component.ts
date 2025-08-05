@@ -46,26 +46,11 @@ export class PersonaListComponent implements OnChanges {
   totalItems = 0;
 
   constructor(private fb: FormBuilder, private personaService: PersonaService) {
+    // Sin validaciones en el frontend - todo se maneja en el backend
     this.personaForm = this.fb.group({
-      nombre: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(2),
-          Validators.maxLength(100),
-          Validators.pattern(/^[a-zA-ZÀ-ſ\s]+$/), // Solo letras, espacios y acentos
-        ],
-      ],
-      edad: [
-        '',
-        [
-          Validators.required,
-          Validators.min(1),
-          Validators.max(120),
-          Validators.pattern(/^\d+$/), // Solo números enteros
-        ],
-      ],
-      genero: ['', [Validators.required]],
+      nombre: [''],
+      edad: [''],
+      genero: ['']
     });
   }
 
@@ -98,21 +83,26 @@ export class PersonaListComponent implements OnChanges {
   }
 
   onSubmit() {
-    if (this.personaForm.valid) {
-      this.isSubmitting = true;
-      this.errorMessage = '';
+    // No validamos en el frontend, enviamos directamente al backend
+    this.isSubmitting = true;
+    this.errorMessage = '';
 
-      if (this.isEditing && this.editingPersonaId) {
-        this.updatePersona();
-      } else {
-        this.createPersona();
-      }
+    if (this.isEditing && this.editingPersonaId) {
+      this.updatePersona();
+    } else {
+      this.createPersona();
     }
   }
 
   createPersona() {
     const formData = this.personaForm.value;
-    const personaData: CreatePersonaRequest = this.personaForm.value;
+    // Convertir edad a número si no está vacía
+    const personaData: CreatePersonaRequest = {
+      nombre: formData.nombre?.trim() || '',
+      edad: formData.edad ? Number(formData.edad) : 0,
+      genero: formData.genero || ''
+    };
+    
     console.log('Enviando datos de persona:', personaData);
     console.log('Token en localStorage:', localStorage.getItem('auth_token'));
 
@@ -130,7 +120,18 @@ export class PersonaListComponent implements OnChanges {
       error: (error) => {
         console.error('Error completo:', error);
         this.isSubmitting = false;
-        this.errorMessage = this.getDetailedErrorMessage(error);
+        
+        // Manejar errores de validación del backend
+        if (error.error?.errors) {
+          // Si hay errores de validación específicos
+          if (error.error.formattedErrors) {
+            this.errorMessage = error.error.formattedErrors;
+          } else {
+            this.errorMessage = 'Error de validación: ' + JSON.stringify(error.error.errors);
+          }
+        } else {
+          this.errorMessage = error.error?.message || 'Error desconocido';
+        }
       },
     });
   }
@@ -138,7 +139,19 @@ export class PersonaListComponent implements OnChanges {
   updatePersona() {
     if (!this.editingPersonaId) return;
 
-    const updateData: UpdatePersonaRequest = this.personaForm.value;
+    const formData = this.personaForm.value;
+    // Preparar datos para actualización, solo incluir campos que tienen valor
+    const updateData: UpdatePersonaRequest = {};
+    
+    if (formData.nombre?.trim()) {
+      updateData.nombre = formData.nombre.trim();
+    }
+    if (formData.edad) {
+      updateData.edad = Number(formData.edad);
+    }
+    if (formData.genero) {
+      updateData.genero = formData.genero;
+    }
 
     this.personaService.update(this.editingPersonaId, updateData).subscribe({
       next: (response) => {
@@ -152,7 +165,17 @@ export class PersonaListComponent implements OnChanges {
       },
       error: (error) => {
         this.isSubmitting = false;
-        this.errorMessage = this.getDetailedErrorMessage(error);
+        
+        // Manejar errores de validación del backend
+        if (error.error?.errors) {
+          if (error.error.formattedErrors) {
+            this.errorMessage = error.error.formattedErrors;
+          } else {
+            this.errorMessage = 'Error de validación: ' + JSON.stringify(error.error.errors);
+          }
+        } else {
+          this.errorMessage = error.error?.message || 'Error desconocido';
+        }
       },
     });
   }
@@ -203,38 +226,4 @@ export class PersonaListComponent implements OnChanges {
     }
   }
 
-  private getDetailedErrorMessage(error: any): string {
-    // Usar el formattedErrors del interceptor si está disponible
-    if (error.error?.formattedErrors) {
-      return `Errores de validación: ${error.error.formattedErrors}`;
-    }
-
-    // Errores de validación del backend (fallback)
-    if (error.error?.errors && Array.isArray(error.error.errors)) {
-      const validationErrors = error.error.errors.map((err: any) => {
-        return `${err.field}: ${err.message}`;
-      }).join(', ');
-      return `Errores de validación: ${validationErrors}`;
-    }
-
-    // Errores HTTP específicos
-    switch (error.status) {
-      case 400:
-        return error.error?.message || 'Datos inválidos. Verifica los campos ingresados.';
-      case 401:
-        return 'No estás autenticado. Inicia sesión nuevamente.';
-      case 403:
-        return 'No tienes permisos para realizar esta acción.';
-      case 404:
-        return 'Recurso no encontrado.';
-      case 409:
-        return 'Conflicto: Ya existe un registro con estos datos.';
-      case 422:
-        return 'Datos no válidos. Verifica los campos requeridos.';
-      case 500:
-        return 'Error en el servidor. Verifica que el backend esté funcionando.';
-      default:
-        return error.error?.message || `Error ${error.status}: ${error.statusText}` || 'Error desconocido';
-    }
-  }
 }

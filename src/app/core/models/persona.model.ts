@@ -9,12 +9,12 @@ export interface Persona {
 
 export interface CreatePersonaRequest {
   nombre: string;
-  edad: string;
+  edad: number;
   genero: 'masculino' | 'femenino';
 }
 
 export interface UpdatePersonaRequest {
   nombre?: string;
-  edad?: string;
+  edad?: number;
   genero?: 'masculino' | 'femenino';
 }

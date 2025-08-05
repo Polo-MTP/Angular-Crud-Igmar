@@ -22,11 +22,13 @@ export class RegisterComponent {
     private authService: AuthService,
     private router: Router
   ) {
+    // Sin validaciones en el frontend - todo se maneja en el backend
+    // Solo validamos que las contraseñas coincidan en el frontend por UX
     this.registerForm = this.fb.group({
-      fullName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(32)]],
-      confirmPassword: ['', Validators.required]
+      fullName: [''],
+      email: [''],
+      password: [''],
+      confirmPassword: ['']
     }, { validators: this.passwordMatchValidator });
   }
 
@@ -37,30 +39,44 @@ export class RegisterComponent {
   }
 
   onSubmit() {
-    if (this.registerForm.valid) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      this.successMessage = '';
-
-      const { confirmPassword, ...registerData } = this.registerForm.value;
-
-      this.authService.register(registerData).subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          if (response.success) {
-            this.successMessage = 'Usuario registrado exitosamente. Redirigiendo al login...';
-            setTimeout(() => {
-              this.router.navigate(['/auth/login']);
-            }, 2000);
-          } else {
-            this.errorMessage = response.message;
-          }
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.errorMessage = error.error?.message || 'Error en el servidor';
-        }
-      });
+    // Solo verificamos que las contraseñas coincidan, el resto lo valida el backend
+    if (this.registerForm.get('password')?.value !== this.registerForm.get('confirmPassword')?.value) {
+      this.errorMessage = 'Las contraseñas no coinciden';
+      return;
     }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const { confirmPassword, ...registerData } = this.registerForm.value;
+
+    this.authService.register(registerData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.success) {
+          this.successMessage = 'Usuario registrado exitosamente. Redirigiendo al login...';
+          setTimeout(() => {
+            this.router.navigate(['/auth/login']);
+          }, 2000);
+        } else {
+          this.errorMessage = response.message;
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+        
+        // Manejar errores de validación del backend
+        if (error.error?.errors) {
+          if (error.error.formattedErrors) {
+            this.errorMessage = error.error.formattedErrors;
+          } else {
+            this.errorMessage = 'Error de validación: ' + JSON.stringify(error.error.errors);
+          }
+        } else {
+          this.errorMessage = error.error?.message || 'Error desconocido';
+        }
+      }
+    });
   }
 }
