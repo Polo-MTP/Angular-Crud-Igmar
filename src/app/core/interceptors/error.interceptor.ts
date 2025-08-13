@@ -1,8 +1,12 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
+  const router = inject(Router);
+  
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       let errorMessage = 'Error desconocido';
@@ -17,7 +21,17 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       } else if (error.status === 404) {
         errorMessage = 'Recurso no encontrado';
       } else if (error.status === 401) {
-        errorMessage = 'No autorizado';
+        errorMessage = 'Token inválido o expirado';
+        // El backend determinó que el token es inválido
+        // Limpiar auth y redirigir a login
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('current_user');
+        
+        // Solo redirigir si no estamos ya en login/register
+        const currentUrl = window.location.pathname;
+        if (!currentUrl.includes('/auth/')) {
+          router.navigate(['/auth/login']);
+        }
       } else if (error.status === 403) {
         errorMessage = 'Acceso denegado';
       }

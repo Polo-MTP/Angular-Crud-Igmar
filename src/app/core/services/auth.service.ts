@@ -74,39 +74,15 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     const token = localStorage.getItem('auth_token');
-    return token !== null && this.isTokenValid(token);
+    return token !== null;
   }
 
   /**
+   * Método simplificado que solo verifica la existencia del token
+   * La validación real se realiza en el backend
    */
   isTokenValid(token: string): boolean {
-    if (!token) return false;
-
-    try {
-      if (token.startsWith('oat_')) {
-        const parts = token.split('.');
-        if (parts.length !== 2) return false;
-
-        if (!parts[0] || !parts[1]) return false;
-
-        return true;
-      }
-
-      const parts = token.split('.');
-      if (parts.length !== 3) return false;
-
-      const payload = JSON.parse(atob(parts[1]));
-
-      if (payload.exp && Date.now() >= payload.exp * 1000) {
-        console.log('🚫 Token expirado');
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error al validar token:', error);
-      return false;
-    }
+    return token !== null && token !== '';
   }
 
   /**

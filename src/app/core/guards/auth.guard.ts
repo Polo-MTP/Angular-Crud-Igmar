@@ -14,14 +14,9 @@ export const authGuard: CanActivateFn = (route, state) => {
     return false;
   }
 
-  if (!authService.isTokenValid(token)) {
-    console.log('🚫 Token inválido, limpiando sesión y redirigiendo a login');
-    authService.clearAuth();
-    router.navigate(['/auth/login']);
-    return false;
-  }
-
-  console.log('✅ Token válido, permitiendo acceso');
+  // Solo verificar existencia del token
+  // La validación real la hace el backend vía interceptores
+  console.log('✅ Token presente, permitiendo acceso');
   return true;
 };
 
@@ -31,18 +26,14 @@ export const noAuthGuard: CanActivateFn = (route, state) => {
 
   const token = authService.getToken();
 
-  if (token && authService.isTokenValid(token)) {
-    console.log('✅ Usuario autenticado, redirigiendo a dashboard');
+  if (token) {
+    // Si hay token, asumimos que está autenticado
+    // Si el token es inválido, el backend lo manejará
+    console.log('✅ Token presente, redirigiendo a dashboard');
     router.navigate(['/dashboard']);
     return false;
-  } else {
-    if (token && !authService.isTokenValid(token)) {
-      console.log('🚫 Token inválido encontrado, limpiando sesión');
-      authService.clearAuth();
-    }
-    console.log(
-      '✅ Usuario no autenticado, permitiendo acceso a página pública'
-    );
-    return true;
   }
+
+  console.log('✅ Sin token, permitiendo acceso a página pública');
+  return true;
 };
