@@ -7,7 +7,7 @@ import { AuthService } from './core/services/auth.service';
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'Sistema de Gestión de Personas';

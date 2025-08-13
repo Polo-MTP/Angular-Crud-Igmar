@@ -52,13 +52,14 @@ export class LoginComponent {
       },
       error: (error) => {
         this.isLoading = false;
-        
+
         // Manejar errores de validación del backend
         if (error.error?.errors) {
           if (error.error.formattedErrors) {
             this.errorMessage = error.error.formattedErrors;
           } else {
-            this.errorMessage = 'Error de validación: ' + JSON.stringify(error.error.errors);
+            this.errorMessage =
+              'Error de validación: ' + JSON.stringify(error.error.errors);
           }
         } else {
           this.errorMessage = error.error?.message || 'Error desconocido';
