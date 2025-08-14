@@ -7,6 +7,13 @@
     >
       Agregar Persona
     </button>
+    <!-- Debugging info (remove in production) -->
+    <div style="margin-top: 10px; padding: 10px; background: #f0f0f0; border-radius: 4px; font-size: 12px;">
+      <strong>Debug Info:</strong><br>
+      isFormVisible: {{ isFormVisible }}<br>
+      isEditing: {{ isEditing }}<br>
+      isSubmitting: {{ isSubmitting }}
+    </div>
   </div>
 
   <div class="form-container" *ngIf="isFormVisible">

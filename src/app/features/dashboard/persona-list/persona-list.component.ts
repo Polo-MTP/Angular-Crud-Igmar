@@ -14,6 +14,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { PersonaService } from '../../../core/services/persona.service';
+import { AuthService } from '../../../core/services/auth.service';
 import {
   Persona,
   CreatePersonaRequest,
@@ -45,7 +46,11 @@ export class PersonaListComponent implements OnChanges {
   itemsPerPage = 5;
   totalItems = 0;
 
-  constructor(private fb: FormBuilder, private personaService: PersonaService) {
+  constructor(
+    private fb: FormBuilder, 
+    private personaService: PersonaService,
+    private authService: AuthService
+  ) {
     // Sin validaciones en el frontend - todo se maneja en el backend
     this.personaForm = this.fb.group({
       nombre: [''],
@@ -55,23 +60,21 @@ export class PersonaListComponent implements OnChanges {
   }
 
   showAddForm() {
-    this.isFormVisible = true;
-    this.isEditing = false;
-    this.editingPersonaId = null;
-    this.personaForm.reset();
-    this.errorMessage = '';
+    console.log('🟢 showAddForm() ejecutado - Verificando token...');
+    console.log('🔍 Estado antes:', {
+      isFormVisible: this.isFormVisible,
+      isEditing: this.isEditing
+    });
+    
+    // Verificar token antes de mostrar el formulario
+    this.verifyTokenAndShowForm('add');
   }
 
   showEditForm(persona: Persona) {
-    this.isFormVisible = true;
-    this.isEditing = true;
-    this.editingPersonaId = persona.id;
-    this.personaForm.patchValue({
-      nombre: persona.nombre,
-      edad: persona.edad,
-      genero: persona.genero,
-    });
-    this.errorMessage = '';
+    console.log('🟡 showEditForm() ejecutado - Verificando token...');
+    
+    // Verificar token antes de mostrar el formulario de edición
+    this.verifyTokenAndShowForm('edit', persona);
   }
 
   hideForm() {
@@ -224,6 +227,63 @@ export class PersonaListComponent implements OnChanges {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
+  }
+
+  // Método para verificar token antes de mostrar formularios
+  verifyTokenAndShowForm(action: 'add' | 'edit', persona?: Persona) {
+    console.log('🔒 Verificando token con el servidor...');
+    
+    // Hacer una petición al endpoint /me para verificar que el token es válido
+    this.authService.me().subscribe({
+      next: (response) => {
+        console.log('✅ Token válido, mostrando formulario');
+        
+        if (action === 'add') {
+          this.showAddFormAfterVerification();
+        } else if (action === 'edit' && persona) {
+          this.showEditFormAfterVerification(persona);
+        }
+      },
+      error: (error) => {
+        console.error('😱 Error al verificar token:', error);
+        console.log('🚫 Token inválido o expirado - No se mostrará el formulario');
+        
+        // El interceptor ya maneja la redirección al login en caso de 401
+        // pero podemos mostrar un mensaje adicional si es necesario
+        this.errorMessage = 'Sesión expirada. Serás redirigido al login.';
+      }
+    });
+  }
+
+  // Método para mostrar formulario de agregar después de verificar token
+  private showAddFormAfterVerification() {
+    console.log('🟢 Mostrando formulario de agregar después de verificación');
+    
+    this.isFormVisible = true;
+    this.isEditing = false;
+    this.editingPersonaId = null;
+    this.personaForm.reset();
+    this.errorMessage = '';
+    
+    console.log('🔍 Estado después:', {
+      isFormVisible: this.isFormVisible,
+      isEditing: this.isEditing
+    });
+  }
+
+  // Método para mostrar formulario de editar después de verificar token
+  private showEditFormAfterVerification(persona: Persona) {
+    console.log('🟡 Mostrando formulario de editar después de verificación');
+    
+    this.isFormVisible = true;
+    this.isEditing = true;
+    this.editingPersonaId = persona.id;
+    this.personaForm.patchValue({
+      nombre: persona.nombre,
+      edad: persona.edad,
+      genero: persona.genero,
+    });
+    this.errorMessage = '';
   }
 
 }
