@@ -28,7 +28,6 @@ export class LoginComponent {
     private router: Router,
     private tokenMonitorService: TokenMonitorService
   ) {
-    // Sin validaciones en el frontend - todo se maneja en el backend
     this.loginForm = this.fb.group({
       email: [''],
       password: [''],
@@ -36,7 +35,6 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    // No validamos en el frontend, enviamos directamente al backend
     this.isLoading = true;
     this.errorMessage = '';
 
@@ -53,7 +51,6 @@ export class LoginComponent {
       error: (error) => {
         this.isLoading = false;
 
-        // Manejar errores de validación del backend
         if (error.error?.errors) {
           if (error.error.formattedErrors) {
             this.errorMessage = error.error.formattedErrors;

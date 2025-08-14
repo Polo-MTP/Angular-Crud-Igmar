@@ -23,9 +23,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           console.log('Sesión expirada, redirigiendo al login...');
         }
 
-        // Enriquecer el error con información adicional para mejor UX
         if (error.error && typeof error.error === 'object') {
-          // Si el backend devuelve errores de validación estructurados
           if (error.error.errors && Array.isArray(error.error.errors)) {
             error.error.formattedErrors = error.error.errors.map((err: any) => {
               return `${err.field}: ${err.message}`;

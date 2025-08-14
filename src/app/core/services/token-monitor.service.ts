@@ -10,10 +10,6 @@ export class TokenMonitorService {
     this.setupStorageListener();
   }
 
-  /**
-   * Método simplificado que ya no hace monitoreo activo
-   * Solo mantiene la interfaz para compatibilidad
-   */
   startMonitoring(): void {
     console.log('🔄 Token monitor iniciado (validación delegada al backend)');
   }
@@ -32,14 +28,9 @@ export class TokenMonitorService {
     }
   }
 
-  /**
-   * Solo escucha cambios en el storage para detectar
-   * cuando el token es eliminado manualmente
-   */
   private setupStorageListener(): void {
     window.addEventListener('storage', (event) => {
       if (event.key === 'auth_token') {
-        // Si el token fue eliminado desde otro tab/ventana
         if (!event.newValue) {
           console.log('🚫 Token eliminado desde otra ventana');
           this.handleTokenRemoval();
@@ -47,18 +38,16 @@ export class TokenMonitorService {
       }
     });
 
-    // Verificar solo si el token fue eliminado manualmente cada 5 segundos
     let lastTokenExists = !!this.authService.getToken();
     setInterval(() => {
       const tokenExists = !!this.authService.getToken();
       
-      // Solo actuar si el token pasó de existir a no existir
       if (lastTokenExists && !tokenExists) {
         console.log('🚫 Token eliminado del localStorage');
         this.handleTokenRemoval();
       }
       
       lastTokenExists = tokenExists;
-    }, 5000); // Verificar cada 5 segundos (menos frecuente)
+    }, 5000);
   }
 }

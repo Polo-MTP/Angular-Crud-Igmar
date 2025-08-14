@@ -12,7 +12,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       let errorMessage = 'Error desconocido';
       
       if (error.error?.message) {
-        // El backend ya envió un mensaje de error específico
         errorMessage = error.error.message;
       } else if (error.status === 0) {
         errorMessage = 'No se pudo conectar con el servidor';
@@ -22,12 +21,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = 'Recurso no encontrado';
       } else if (error.status === 401) {
         errorMessage = 'Token inválido o expirado';
-        // El backend determinó que el token es inválido
-        // Limpiar auth y redirigir a login
         localStorage.removeItem('auth_token');
         localStorage.removeItem('current_user');
         
-        // Solo redirigir si no estamos ya en login/register
         const currentUrl = window.location.pathname;
         if (!currentUrl.includes('/auth/')) {
           router.navigate(['/auth/login']);
@@ -36,12 +32,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = 'Acceso denegado';
       }
 
-      // Procesar errores de validación del backend
       if (error.status === 422 && error.error?.errors) {
-        // VineJS devuelve errores en este formato
         const validationErrors = error.error.errors;
         
-        // Formatear errores de validación para mejor UX
         if (Array.isArray(validationErrors)) {
           error.error.formattedErrors = validationErrors.map((err: any) => {
             const field = err.field || 'Campo';
@@ -49,7 +42,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             return `${field}: ${message}`;
           }).join(', ');
         } else if (typeof validationErrors === 'object') {
-          // Si es un objeto con campos como keys
           error.error.formattedErrors = Object.entries(validationErrors)
             .map(([field, messages]: [string, any]) => {
               const fieldMessages = Array.isArray(messages) ? messages : [messages];
@@ -58,8 +50,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             .join('; ');
         }
       }
-
-      // Crear un error con la estructura esperada por el frontend
       const formattedError = {
         ...error,
         error: {

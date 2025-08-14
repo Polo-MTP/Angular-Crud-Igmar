@@ -18,14 +18,12 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Iniciar monitoreo si el usuario está autenticado
     if (this.authService.isAuthenticated()) {
       this.tokenMonitorService.startMonitoring();
     }
   }
 
   ngOnDestroy(): void {
-    // Detener monitoreo al destruir el componente
     this.tokenMonitorService.stopMonitoring();
   }
 }

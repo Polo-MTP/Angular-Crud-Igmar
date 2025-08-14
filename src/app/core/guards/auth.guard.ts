@@ -14,8 +14,6 @@ export const authGuard: CanActivateFn = (route, state) => {
     return false;
   }
 
-  // Solo verificar existencia del token
-  // La validación real la hace el backend vía interceptores
   console.log('✅ Token presente, permitiendo acceso');
   return true;
 };
@@ -27,8 +25,6 @@ export const noAuthGuard: CanActivateFn = (route, state) => {
   const token = authService.getToken();
 
   if (token) {
-    // Si hay token, asumimos que está autenticado
-    // Si el token es inválido, el backend lo manejará
     console.log('✅ Token presente, redirigiendo a dashboard');
     router.navigate(['/dashboard']);
     return false;

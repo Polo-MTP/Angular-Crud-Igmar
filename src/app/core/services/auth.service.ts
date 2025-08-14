@@ -77,16 +77,9 @@ export class AuthService {
     return token !== null;
   }
 
-  /**
-   * Método simplificado que solo verifica la existencia del token
-   * La validación real se realiza en el backend
-   */
   isTokenValid(token: string): boolean {
     return token !== null && token !== '';
   }
-
-  /**
-   */
   getToken(): string | null {
     return localStorage.getItem('auth_token');
   }
